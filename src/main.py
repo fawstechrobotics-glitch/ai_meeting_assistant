@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import queue
 import signal
 import sys
@@ -71,7 +72,12 @@ class MeetingAssistantController:
         # Hardware capture state
         self.cap: Optional[cv2.VideoCapture] = None
         self._mock_frame_counter = 0
-        self._display_failed = False
+
+        # Auto-detect display availability (e.g. running inside Docker without X11)
+        has_display = bool(os.environ.get("DISPLAY")) or (sys.platform == "darwin" and not self.settings.HEADLESS_MODE)
+        self._display_failed = (not has_display) or self.settings.HEADLESS_MODE
+        if self._display_failed:
+            os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
     def _configure_logging(self) -> None:
         """Configures standard formatted logging."""
@@ -249,8 +255,12 @@ class MeetingAssistantController:
 
     def _run_loop(self) -> None:
         """Core visual processing, inference, and rendering loop."""
-        if not self.settings.HEADLESS_MODE:
-            cv2.namedWindow(self.settings.WINDOW_TITLE, cv2.WINDOW_NORMAL)
+        if not self.settings.HEADLESS_MODE and not self._display_failed:
+            try:
+                cv2.namedWindow(self.settings.WINDOW_TITLE, cv2.WINDOW_NORMAL)
+            except Exception as cv_err:
+                logger.warning("Could not initialize OpenCV GUI window (%s). Defaulting to web stream.", cv_err)
+                self._display_failed = True
 
         try:
             while self.running:

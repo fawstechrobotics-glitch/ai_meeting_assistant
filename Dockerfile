@@ -14,7 +14,11 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_DEFAULT_TIMEOUT=1000 \
-    PIP_RETRIES=20
+    PIP_RETRIES=20 \
+    HEADLESS_MODE=true \
+    ENABLE_WEB_STREAM=true \
+    WEB_STREAM_PORT=5000 \
+    QT_QPA_PLATFORM=offscreen
 
 # Install essential native libraries for OpenCV, MediaPipe, Audio (ALSA/Pulse), and TTS (espeak)
 RUN apt-get update && apt-get install -y --no-install-recommends \
