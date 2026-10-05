@@ -1,0 +1,80 @@
+# ==============================================================================
+# Assistive Real-Time Meeting Tool - Multi-Environment Docker Compose
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # Linux Hardware Passthrough Service (Webcam /dev/video0, ALSA, X11)
+  # ----------------------------------------------------------------------------
+  meeting-tool:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: assistive-meeting-tool:latest
+    container_name: assistive_meeting_assistant
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    ipc: host
+    network_mode: host
+    env_file:
+      - .env
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+      - PULSE_SERVER=unix:/tmp/pulseaudio.socket
+      - ENABLE_WEB_STREAM=true
+      - WEB_STREAM_PORT=5000
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XDG_RUNTIME_DIR:-/run/user/1000}/pulse/native:/tmp/pulseaudio.socket:ro
+      - ./models:/app/models:ro
+    devices:
+      - /dev/video0:/dev/video0
+      - /dev/snd:/dev/snd
+    privileged: true
+    stdin_open: true
+    tty: true
+
+  # ----------------------------------------------------------------------------
+  # Web Stream Service (Zero-Config for macOS, Windows, and Headless Servers)
+  # ----------------------------------------------------------------------------
+  meeting-tool-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: assistive-meeting-tool:latest
+    container_name: assistive_meeting_assistant_web
+    restart: unless-stopped
+    ports:
+      - "5050:5000"
+    env_file:
+      - .env
+    environment:
+      - HEADLESS_MODE=true
+      - MOCK_HARDWARE=true
+      - ENABLE_WEB_STREAM=true
+      - WEB_STREAM_PORT=5000
+    volumes:
+      - ./models:/app/models:ro
+      - ./src:/app/src:ro
+    stdin_open: true
+    tty: true
+
+  # ----------------------------------------------------------------------------
+  # Automated Test Runner Service (CI & Verification)
+  # ----------------------------------------------------------------------------
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: assistive-meeting-tool:latest
+    container_name: assistive_meeting_tests
+    entrypoint: ["pytest"]
+    command: ["tests/", "-v", "--tb=short"]
+    environment:
+      - HEADLESS_MODE=true
+      - MOCK_HARDWARE=true
+    volumes:
+      - ./src:/app/src:ro
+      - ./tests:/app/tests:ro

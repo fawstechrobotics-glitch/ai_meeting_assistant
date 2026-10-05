@@ -1,0 +1,20 @@
+# Git
+.git
+.gitignore
+
+# Python caches
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+
+# Environment
+.env
+venv
+.venv
+
+# Documentation & OS files
+.DS_Store
+*.md
+!README.md

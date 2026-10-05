@@ -1,0 +1,29 @@
+# ==============================================================================
+# Assistive Real-Time Meeting Tool - Core Dependencies
+# ==============================================================================
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Core & Configuration
+pydantic>=2.5.0,<3.0.0
+pydantic-settings>=2.1.0,<3.0.0
+python-dotenv>=1.0.0,<2.0.0
+numpy>=1.24.0,<2.0.0
+
+# Computer Vision & Machine Learning
+opencv-python>=4.8.0.76,<5.0.0
+mediapipe>=0.10.9,<0.11.0
+torch>=2.0.0,<3.0.0
+
+# Speech-to-Text (STT) & Audio Capture
+PyAudio>=0.2.13,<0.3.0
+SpeechRecognition>=3.10.0,<4.0.0
+openai-whisper>=20231117
+sounddevice>=0.4.6,<0.5.0
+
+# Text-to-Speech (TTS)
+pyttsx3>=2.90,<3.0.0
+gTTS>=2.4.0,<3.0.0
+
+# Testing & Quality Assurance
+pytest>=7.4.0,<9.0.0
+pytest-mock>=3.11.1,<4.0.0
