@@ -100,7 +100,37 @@ AI_meeting_Assistant/
 
 ## Quick Start with Docker
 
-### macOS Users (Docker Desktop)
+### Option A: Direct Docker Run (Pre-built Image — Fastest)
+
+Run the container directly on any machine with Docker installed without cloning the repository:
+
+```bash
+# 1. Run container in background on port 5050
+docker run -d --name meeting_assistant -p 5050:5000 --restart unless-stopped sarath6594/assistive-meeting-tool:latest
+
+# 2. View live logs in real time
+docker logs -f meeting_assistant
+
+# 3. Stop the container
+docker stop meeting_assistant
+
+# 4. Start an existing stopped container
+docker start meeting_assistant
+
+# 5. Restart the container
+docker restart meeting_assistant
+
+# 6. Remove the container completely (to create fresh)
+docker rm -f meeting_assistant
+```
+
+👉 **Access the HUD**: Open **[http://localhost:5050](http://localhost:5050)** in Google Chrome.
+
+---
+
+### Option B: Using Docker Compose (Source Code)
+
+#### macOS Users (Docker Desktop)
 
 > [!NOTE]
 > On macOS, `xhost` and Linux V4L2 device nodes (`/dev/video0`) do not exist natively because Docker runs inside a lightweight Linux VM. 
